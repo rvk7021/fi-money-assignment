@@ -157,34 +157,49 @@ create index idx_inventory_updates_user_id on inventory_updates using btree (use
 ### Authentication
 - **POST /api/auth/signup**
   - Request: `{ "username": "string", "password": "string" }`
-  - Response: `{ id, message }`
+  - Response: `201 Created`
+    - `{ id: string, message: "User created successfully" }`
+    - `409 Conflict`: `{ error: "Username already exists" }`
+    - `400 Bad Request`: `{ error: "Username and password are required" }`
 
 - **POST /api/auth/login**
   - Request: `{ "username": "string", "password": "string" }`
-  - Response: `{ message }` (JWT cookie set)
+  - Response: `200 OK`
+    - `{ message: "Login successful" }` (JWT cookie set)
+    - `401 Unauthorized`: `{ error: "Invalid credentials" }`
+    - `400 Bad Request`: `{ error: "Username and password are required" }`
 
 - **GET /api/auth/me**
-  - Returns user info if authenticated
+  - Response: `200 OK` if authenticated
+    - `{ id: string, username: string }`
+    - `401 Unauthorized` if not authenticated
 
 ### Products
 - **POST /api/products** (auth required)
-  - Add a product
   - Request: `{ name, type, sku, image_url, description, quantity, price }`
-  - Response: `{ id, message }`
+  - Response: `201 Created`
+    - `{ id: string, message: "Product added successfully" }`
+    - `409 Conflict`: `{ error: "SKU already exists" }`
+    - `400 Bad Request`: `{ error: "Missing required fields" }`
 
 - **PUT /api/products/:id/quantity** (auth required)
-  - Update product quantity
-  - Request: `{ quantity }`
-  - Response: `{ message, product }`
+  - Request: `{ quantity: integer }`
+  - Response: `200 OK`
+    - `{ message: "Quantity updated successfully", product: { ...updatedProduct } }`
+    - `404 Not Found`: `{ error: "Product not found" }`
+    - `400 Bad Request`: `{ error: "Quantity must be a non-negative integer" }`
 
 - **GET /api/products** (auth required)
-  - Paginated list of products
   - Query: `?page=1&limit=10`
-  - Response: `{ page, limit, total, products }`
+  - Response: `200 OK`
+    - `{ page: number, limit: number, total: number, products: [ ... ] }`
 
 ### Health
 - **GET /api/health**
-  - Returns server and DB status
+  - Response: `200 OK` if healthy
+    - `{ status: "ok", db: "connected" }`
+  - Response: `500 Internal Server Error` if DB is not connected
+    - `{ status: "error", db: "disconnected", error: string }`
 
 ---
 
