@@ -9,7 +9,7 @@ A Node.js backend for inventory management with user authentication, product man
 
 ### 1. Clone the Repository
 ```sh
-git clone <your-repo-url>
+git clone https://github.com/rvk7021/fi-money-assignment.git
 cd backend
 ```
 
