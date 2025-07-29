@@ -109,9 +109,4 @@ router.put('/:id/quantity', verifyToken, updateProductQuantity);
  */
 router.get('/', verifyToken, getProducts);
 
-// Compatibility aliases for test script (no /api prefix)
-router.post('/products', verifyToken, addProduct);
-router.put('/products/:id/quantity', verifyToken, updateProductQuantity);
-router.get('/products', verifyToken, getProducts);
-
 export default router; 

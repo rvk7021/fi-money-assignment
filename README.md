@@ -17,40 +17,68 @@ A full-stack inventory management application for small businesses. Built with N
 ## Project Structure
 ```
 .
-├── backend/
-│   ├── src/
-│   │   ├── controllers/         # Route controllers (auth, product)
-│   │   ├── models/              # Sequelize models (user, product, inventory-update)
-│   │   ├── routes/              # Express route definitions
-│   │   ├── middleware/          # Auth and other middleware
-│   │   ├── services/            # Business logic (user, product)
-│   │   ├── utils/               # DB connection, Swagger config
-│   │   └── index.js             # App entry point
-│   ├── .env.example             # Backend environment variables example
-│   ├── database-init.sql        # SQL schema for DB setup
-│   ├── package.json
+├── backend/                  # Backend service (Node.js, Express, PostgreSQL)
+│   ├── Dockerfile            # Dockerfile for backend
 │   └── ...
-├── frontend/
-│   ├── src/
-│   │   ├── api/                 # API utility functions (future use)
-│   │   ├── components/          # Reusable UI components and modals
-│   │   ├── context/             # Auth context
-│   │   ├── hooks/               # Custom React hooks (future use)
-│   │   ├── pages/               # Main pages (Login, Signup, Products)
-│   │   ├── App.js
-│   │   └── index.js
-│   ├── .env.example             # Frontend environment variables example
-│   ├── tailwind.config.js
-│   ├── postcss.config.js
-│   ├── package.json
+├── frontend/                 # Frontend service (React, Tailwind CSS)
+│   ├── Dockerfile            # Dockerfile for frontend
 │   └── ...
-├── README.md                    # Main project documentation
-├── .gitignore                   # Root .gitignore
-└── ...
+├── Dockerfile                # Root Dockerfile (builds frontend+backend together)
+└── README.md                 # Main project documentation
 ```
 
 ---
 
+## Architecture Overview
+
+```mermaid
+graph TD;
+  subgraph "App Container (Node.js/Express + React)"
+    APP["fi-money-app (port 3000)"]
+  end
+  subgraph "Database (PostgreSQL)"
+    DB[("db:5432")]
+  end
+  APP -- REST API & Static Files --> Users
+  APP -- SQL --> DB
+```
+
+- **App Container**: Runs both backend API and serves frontend static files (single container)
+- **Database**: PostgreSQL (must be run separately)
+
+---
+
+## Running Both Frontend and Backend Together Using the Root Dockerfile
+
+The root-level `Dockerfile` is designed to build and serve both the frontend (React) and backend (Node.js/Express) in a single container. The backend will serve the API and also serve the frontend static files.
+
+### Steps:
+
+1. **Build the Docker image from the root directory:**
+   ```sh
+   docker build -t fi-money-app .
+   ```
+2. **Run the container:**
+   ```sh
+   docker run -p 3000:3000 --env-file ./backend/.env fi-money-app
+   ```
+   - The app (API and frontend) will be available at [http://localhost:3000](http://localhost:3000)
+   - The backend serves API routes and the frontend static files from the same port.
+
+3. **Database Requirement:**
+   - The container does NOT run a database. You must run PostgreSQL separately (e.g., using the official Postgres Docker image or your own instance).
+   - Ensure your `.env` in `./backend` points to the correct database host/port.
+
+---
+
+## Summary of Docker Options
+
+- **Frontend + Backend (single container):** Use the root Dockerfile as shown above
+
+- **Database:** Must be run separately (not included in any Dockerfile)
+
+---
+# Optional Method
 ## Backend Setup
 
 1. **Install dependencies:**

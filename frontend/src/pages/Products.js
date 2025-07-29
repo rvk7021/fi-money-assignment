@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import AddProductModal from '../components/AddProductModal.js';
 import UpdateQuantityModal from '../components/UpdateQuantityModal.js';
@@ -16,7 +15,6 @@ const Products = () => {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [retry, setRetry] = useState(0);
-    const { isAuthenticated, logout } = useAuth();
     const navigate = useNavigate();
 
     const fetchProducts = async (pageNum = page) => {
@@ -40,16 +38,16 @@ const Products = () => {
     };
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!localStorage.getItem('isAuthenticated')) {
             navigate('/login');
             return;
         }
         fetchProducts();
         // eslint-disable-next-line
-    }, [isAuthenticated, navigate, page, retry]);
+    }, [navigate, page, retry]);
 
     const handleLogout = () => {
-        logout();
+        localStorage.removeItem('isAuthenticated');
         navigate('/login');
     };
 

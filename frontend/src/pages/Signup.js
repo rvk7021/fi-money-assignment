@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext.js';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -9,14 +8,13 @@ const Signup = () => {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (localStorage.getItem('isAuthenticated')) {
       navigate('/products');
     }
-  }, [isAuthenticated, navigate]);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

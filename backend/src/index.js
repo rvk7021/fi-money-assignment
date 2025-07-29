@@ -8,12 +8,22 @@ import { connection } from './utils/db.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './utils/swagger.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3001';
 app.use(cors({ credentials: true, origin: allowedOrigin }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/*splat', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/api/docs')) return next();
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const specs = swaggerJsdoc(swaggerOptions);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
