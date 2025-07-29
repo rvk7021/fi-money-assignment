@@ -18,10 +18,8 @@ A full-stack inventory management application for small businesses. Built with N
 ```
 .
 ├── backend/                  # Backend service (Node.js, Express, PostgreSQL)
-│   ├── Dockerfile            # Dockerfile for backend
 │   └── ...
 ├── frontend/                 # Frontend service (React, Tailwind CSS)
-│   ├── Dockerfile            # Dockerfile for frontend
 │   └── ...
 ├── Dockerfile                # Root Dockerfile (builds frontend+backend together)
 └── README.md                 # Main project documentation
